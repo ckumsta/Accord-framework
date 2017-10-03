@@ -72,17 +72,24 @@ namespace Accord.Tests.MachineLearning
                 Tolerance = 1e-3
             };
 
-            // Now, we can use the Run method to learn:
+            // Now, we can use the Learn method to learn a boosted classifier
             Boost<DecisionStump> classifier = learner.Learn(inputs, outputs);
 
-            double error = new ConfusionMatrix(expected: outputs, predicted: classifier.Decide(inputs)).Error; // should be 0 
+            // And we can test its performance using (error should be 0):
+            ConfusionMatrix cm = ConfusionMatrix.Estimate(classifier, inputs, outputs);
 
-            // Now, we can compute the model outputs for new samples using
-            bool y = classifier.Decide(new double[] { 71, 48 }); // should be true
+            double error = cm.Error;  // should be 0.0
+            double acc = cm.Accuracy; // should be 1.0
+            double kappa = cm.Kappa;  // should be 1.0
+
+            // And compute a decision for a single data point using:
+            bool y = classifier.Decide(inputs[0]); // result should false
             #endregion
 
-            Assert.AreEqual(true, y);
+            Assert.AreEqual(false, y);
             Assert.AreEqual(0, error);
+            Assert.AreEqual(1, acc);
+            Assert.AreEqual(1, kappa);
 
             Assert.AreEqual(5, classifier.Models.Count);
             Assert.AreEqual(0.16684734250395147, classifier.Models[0].Weight);
@@ -130,11 +137,15 @@ namespace Accord.Tests.MachineLearning
                 Tolerance = 1e-5,
             };
 
-            // Now, we can obtain a learned classifier using:
+            // Now, we can use the Learn method to learn a boosted classifier
             Boost<LogisticRegression> classifier = teacher.Learn(inputs, outputs);
 
             // And we can test its performance using (error should be 0.11):
-            double error = ConfusionMatrix.Estimate(classifier, inputs, outputs).Error;
+            ConfusionMatrix cm = ConfusionMatrix.Estimate(classifier, inputs, outputs);
+
+            double error = cm.Error;  // should be 0.11
+            double acc = cm.Accuracy; // should be 0.89
+            double kappa = cm.Kappa;  // should be 0.78
 
             // And compute a decision for a single data point using:
             bool y = classifier.Decide(inputs[0]); // result should false
@@ -142,6 +153,8 @@ namespace Accord.Tests.MachineLearning
 
             Assert.AreEqual(false, y);
             Assert.AreEqual(0.11, error);
+            Assert.AreEqual(0.89, acc);
+            Assert.AreEqual(0.78, kappa);
 
             Assert.AreEqual(2, classifier.Models.Count);
             Assert.AreEqual(0.63576818449825168, classifier.Models[0].Weight);
@@ -183,7 +196,7 @@ namespace Accord.Tests.MachineLearning
                 Tolerance = 1e-5,
             };
 
-            // Now, we can obtain a learned classifier using:
+            // Now, we can use the Learn method to learn a boosted classifier
             Boost<DecisionTree> classifier = teacher.Learn(inputs, outputs);
 
             // And we can test its performance using (error should be 0.11):
@@ -279,9 +292,9 @@ namespace Accord.Tests.MachineLearning
         {
             var dataset = new YinYang();
             double[][] inputs = dataset.Instances;
-            int[] outputs = dataset.ClassLabels;
+            bool[] outputs2 = dataset.ClassLabels;
 
-            var outputs2 = outputs.Apply(x => x > 0 ? 1.0 : 0.0);
+            int[] outputs = outputs2.Apply(x => x ? 1 : 0);
 
             var classifier = new Boost<Weak<LogisticRegression>>();
 
@@ -297,7 +310,7 @@ namespace Accord.Tests.MachineLearning
                     };
 
                     for (int i = 0; i < 50; i++)
-                        irls.Run(inputs, outputs2, weights);
+                        irls.Run(inputs, outputs, weights);
 
                     return new Weak<LogisticRegression>(reg, (s, x) => Math.Sign(s.Compute(x) - 0.5));
                 },

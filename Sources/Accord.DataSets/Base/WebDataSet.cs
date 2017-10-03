@@ -28,6 +28,11 @@ namespace Accord.DataSets.Base
     using ICSharpCode.SharpZipLib.BZip2;
     using ICSharpCode.SharpZipLib.GZip;
     using Accord.Compat;
+#if NETSTANDARD
+    using ICSharpCode.SharpZipLib.Lzw;
+#else
+    using ICSharpCode.SharpZipLib.LZW;
+#endif
 
     /// <summary>
     ///   Base class for sparse datasets that can be downloaded from LIBSVM website.
@@ -166,7 +171,7 @@ namespace Accord.DataSets.Base
                 if (!File.Exists(uncompressedFileName))
                 {
                     using (var compressedFile = new FileStream(downloadedFullFilePath, FileMode.Open, FileAccess.Read))
-                    using (var decompressedFile = new Accord.IO.Compression.LzwInputStream(compressedFile))
+                    using (var decompressedFile = new LzwInputStream(compressedFile))
                     using (var uncompressedFile = new FileStream(uncompressedFileName, FileMode.CreateNew, FileAccess.Write))
                     {
                         decompressedFile.CopyTo(uncompressedFile);

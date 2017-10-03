@@ -87,6 +87,19 @@ namespace Accord.Imaging
     ///   </list>
     /// </para>
     /// </remarks>
+    /// 
+    /// <example>
+    /// <para>
+    ///   The first example shows how to extract HOG descriptors from a standard test image:</para>
+    ///   <code source="Unit Tests\Accord.Tests.Imaging\SpeedUpRobustFeaturesDetectorTest.cs" region="doc_apply" />
+    ///   
+    /// <para>
+    ///   The second example shows how to use HOG descriptors as part of a BagOfVisualWords (BoW) pipeline 
+    ///   for image classification:</para>
+    ///   <code source="Unit Tests\Accord.Tests.Vision\Imaging\BagOfVisualWordsTest.cs" region="doc_learn" />
+    ///   <code source="Unit Tests\Accord.Tests.Vision\Imaging\BagOfVisualWordsTest.cs" region="doc_classification" />
+    /// </example>
+    /// 
     ///
     /// <seealso cref="SpeededUpRobustFeaturePoint"/>
     /// <seealso cref="SpeededUpRobustFeaturesDescriptor"/>
@@ -117,27 +130,6 @@ namespace Accord.Imaging
         ///   Initializes a new instance of the <see cref="SpeededUpRobustFeaturesDetector"/> class.
         /// </summary>
         /// 
-        public SpeededUpRobustFeaturesDetector()
-            : this(0.0002f)
-        {
-        }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="SpeededUpRobustFeaturesDetector"/> class.
-        /// </summary>
-        /// 
-        /// <param name="threshold">
-        ///   The non-maximum suppression threshold. Default is 0.0002f.</param>
-        ///   
-        public SpeededUpRobustFeaturesDetector(float threshold)
-            : this(threshold, 5, 2)
-        {
-        }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="SpeededUpRobustFeaturesDetector"/> class.
-        /// </summary>
-        /// 
         /// <param name="threshold">
         ///   The non-maximum suppression threshold. Default is 0.0002f.</param>
         /// <param name="octaves">
@@ -148,7 +140,7 @@ namespace Accord.Imaging
         ///   The initial step to use when building the <see cref="ResponseLayerCollection">
         ///   response filter</see>. Default is 2. </param>
         ///   
-        public SpeededUpRobustFeaturesDetector(double threshold, int octaves, int initial)
+        public SpeededUpRobustFeaturesDetector(double threshold = 0.0002f, int octaves = 5, int initial = 2)
         {
             this.threshold = threshold;
             this.octaves = octaves;
